@@ -12,7 +12,7 @@ class Color(Enum):
 
 class Cube:
 
-	#Basic cube setupx
+	#Basic cube setup
 	whiteArray = [[Color.WHITE,Color.WHITE,Color.WHITE],[Color.WHITE,Color.WHITE,Color.WHITE],[Color.WHITE,Color.WHITE,Color.WHITE]]
 	blueArray = [[Color.BLUE,Color.BLUE,Color.BLUE],[Color.BLUE,Color.BLUE,Color.BLUE],[Color.BLUE,Color.BLUE,Color.BLUE]]
 	yellowArray = [[Color.YELLOW,Color.YELLOW,Color.YELLOW],[Color.YELLOW,Color.YELLOW,Color.YELLOW],[Color.YELLOW,Color.YELLOW,Color.YELLOW]]
@@ -24,34 +24,12 @@ class Cube:
 	#Define an isSolved method - Pending	
 	solvedRubik = [whiteArray, blueArray, orangeArray, greenArray, redArray, yellowArray]	
 
-	def outputCube(self):
-		for side in self.rubik:
-			for row in side:
-				for element in row:
-					print(element, end = " ")
-				print()
-			print()
-
-	def getCube(self):
-		return self.rubik
-
-	def setCube(self, customRubik):
-		self.rubik = customRubik
-
-	#Note that rotate clockwise is always invoked with the white center of the cube facing upwards. Only the four equitorial sides' faces may be rotated 
-	def rotateEquatorial(self, faceColor):
-		if validAxialColor(faceColor):
-			self.equatorialClockwise(faceColor)
-
-	def rotateAxial(self, faceColor, axialColor):
-		if !(validAxialColor(faceColor)) and validAxialColor(axialColor):
-			self.axialClockwise(faceColor, axialColor)
-
 	#Helper methods
-	def __validAxialColor__(axialColor):
+
+	def isAxialColor(self, axialColor):
 		return (axialColor != Color.WHITE and axialColor != Color.YELLOW)
 
-	def __equatorialClockwise__(self, faceColor):
+	def equatorialClockwise(self, faceColor):
 		faceColor = faceColor.value
 		whiteRow = self.rubik[Color.WHITE.value][2]
 		yellowRow = self.rubik[Color.YELLOW.value][2]
@@ -80,23 +58,69 @@ class Cube:
 		self.verticallyModify(2, previousIndex, Color.YELLOW)
 		self.verticallyModify(0, nextIndex, Color.WHITE)
 
-	def __verticallyModify__(self, column, index, color):
+	def verticallyModify(self, column, index, color):
 		for i in range (3):
 			self.rubik[index][i][column] = color
 
-	def __axialClockwise__(self, faceColor, axialColor):
+	def axialClockwise(self, faceColor):
 		if faceColor == Color.WHITE:
-			self.shiftFirstRowForward()
+			self.shiftRow(0, True)
 		elif faceColor == Color.YELLOW:
-			self.shiftFirstRowBackward()
+			self.shiftRow(2, False)
 
-	def __shiftFirstRowForward__(self):
+	def shiftRow(self, rowIndex, isForward):
+		if(isForward):
+			self.performRowShift(rowIndex)
+		else:
+			for i in range(0,2):
+				self.performRowShift(rowIndex)
 
-	def __shiftFirstRowBackward__(self):
+	def performRowShift(self, rowIndex):
+		#Shift the rows of each side forward
+		blueRow = copy.deepcopy(self.rubik[Color.BLUE.value])[rowIndex]
+		orangeRow = copy.deepcopy(self.rubik[Color.ORANGE.value])[rowIndex]
+		greenRow = copy.deepcopy(self.rubik[Color.GREEN.value])[rowIndex]
+		redRow = copy.deepcopy(self.rubik[Color.RED.value])[rowIndex]
+
+		tempBlue = copy.deepcopy(blueRow)
+		blueRow = copy.deepcopy(orangeRow)
+		orangeRow = copy.deepcopy(greenRow)
+		greenRow = copy.deepcopy(redRow)
+		redRow = tempBlue
+
+		self.rubik[Color.BLUE.value][rowIndex] = blueRow
+		self.rubik[Color.ORANGE.value][rowIndex] = orangeRow
+		self.rubik[Color.GREEN.value][rowIndex] = greenRow
+		self.rubik[Color.RED.value][rowIndex] = redRow
+
+	#Public Methods
+	def outputCube(self):
+		for side in self.rubik:
+			for row in side:
+				for element in row:
+					print(element, end = " ")
+				print()
+			print()
+
+	def getCube(self):
+		return self.rubik
+
+	def setCube(self, customRubik):
+		self.rubik = customRubik
+
+	#Note that rotate clockwise is always invoked with the white center of the cube facing upwards. Only the four equitorial sides' faces may be rotated 
+	def rotateEquatorial(self, faceColor):
+		if self.isAxialColor(faceColor):
+			self.equatorialClockwise(faceColor)
+
+	def rotateAxial(self, faceColor):
+		if not(self.isAxialColor(faceColor)):
+			self.axialClockwise(faceColor)
 
 
 myCube = Cube()
 myCube.outputCube()
-myCube.rotateClockwise(Color.BLUE)
+myCube.rotateEquatorial(Color.BLUE)
+myCube.rotateAxial(Color.WHITE)
 myCube.outputCube()
 
