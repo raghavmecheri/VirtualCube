@@ -22,7 +22,7 @@ class Cube:
 	#Assembling the cube as arrays
 	rubik = [whiteArray, blueArray, orangeArray, greenArray, redArray, yellowArray]	
 	#Define an isSolved method - Pending	
-	solvedRubik = [whiteArray, blueArray, orangeArray, greenArray, redArray, yellowArray]	
+	solvedRubik = [copy.deepcopy(whiteArray), copy.deepcopy(blueArray), copy.deepcopy(orangeArray), copy.deepcopy(greenArray), copy.deepcopy(redArray), copy.deepcopy(yellowArray)]	
 
 	#Helper methods
 
@@ -108,19 +108,22 @@ class Cube:
 	def setCube(self, customRubik):
 		self.rubik = customRubik
 
-	#Note that rotate clockwise is always invoked with the white center of the cube facing upwards. Only the four equitorial sides' faces may be rotated 
+	#Rotate clockwise is always invoked with the white center of the cube facing upwards. Only the four equitorial sides' faces may be rotated 
 	def rotateEquatorial(self, faceColor):
 		if self.isAxialColor(faceColor):
 			self.equatorialClockwise(faceColor)
 
+	#The face color for axial is either Yellow or White
 	def rotateAxial(self, faceColor):
 		if not(self.isAxialColor(faceColor)):
 			self.axialClockwise(faceColor)
 
-
-myCube = Cube()
-myCube.outputCube()
-myCube.rotateEquatorial(Color.BLUE)
-myCube.rotateAxial(Color.WHITE)
-myCube.outputCube()
+	def isSolved(self):
+		flag = True
+		for sideIndex in range(0,5):
+			for rowIndex in range(0,2):
+				for columnIndex in range(0,2):
+					if self.rubik[sideIndex][rowIndex][columnIndex] != self.solvedRubik[sideIndex][rowIndex][columnIndex]:
+						flag = False
+		return flag
 
