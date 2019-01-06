@@ -106,7 +106,7 @@ class Cube:
 		return self.rubik
 
 	def setCube(self, customRubik):
-		self.rubik = customRubik
+		self.rubik = copy.deepcopy(customRubik)
 
 	#Rotate clockwise is always invoked with the white center of the cube facing upwards. Only the four equitorial sides' faces may be rotated 
 	def rotateEquatorial(self, faceColor):
